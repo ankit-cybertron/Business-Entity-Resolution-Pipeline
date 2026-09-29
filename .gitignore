@@ -1,0 +1,43 @@
+# Data
+dataset/
+S2
+S3
+
+# Generated artifacts
+cache/
+checkpoints/
+output/
+tmp/
+
+# Python environments
+.venv/
+venv/
+env/
+
+# Python generated files
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Model artifacts
+*.pkl
+*.pickle
+*.joblib
+*.model
+*.bin
+*.pt
+*.pth
+*.ckpt
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
