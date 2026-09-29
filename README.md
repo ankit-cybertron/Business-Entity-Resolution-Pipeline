@@ -1,6 +1,6 @@
-# Amazon ML Challenge 2026 — Entity Resolution
+# Business Entity Resolution Pipeline
 
-This VM project is based on the supplied challenge notebook and problem statement.
+A large-scale entity resolution pipeline for matching business records across multiple noisy data sources.
 
 ## Current design
 
@@ -10,16 +10,18 @@ This VM project is based on the supplied challenge notebook and problem statemen
 - Polars + Parquet for disk-backed preprocessing.
 - Progress bars for long-running operations.
 - Explicit RSS memory guard with a hard ceiling of 60 GB.
-- No `blocking.py` is included or executed yet, by request.
+- Candidate generation and blocking are used to reduce the pairwise search space.
 
-## Important next stage
+## Candidate generation
 
-The challenge requires a candidate set before final matching. The official
-`candidate_pairs.tsv` is the final candidate list actually scored by the model.
-Every final match must be present in that candidate set.
+Candidate generation reduces the number of record pairs that need to be
+processed by creating a restricted set of plausible candidate matches.
 
-We will add the candidate-generation/blocking stage separately after the
-preprocessing and feature/model code is verified on the VM.
+The pipeline uses multiple blocking strategies based on normalized business
+names, phonetic representations, address information, street information,
+token relationships, and numeric address signatures.
+
+Final matching is performed only on generated candidate pairs.
 
 ## Data layout
 
@@ -59,12 +61,26 @@ training script caps the number of feature rows at `MAX_TRAIN_PAIRS`.
 
 Do not increase these limits until actual RSS has been measured.
 
-## Challenge-specific rules
 
-The supplied problem statement says:
-- all test Source-1 entities must appear in the final output;
-- empty match lists are valid for singletons;
-- final matches must be a subset of candidate pairs;
-- output is TSV;
-- country labels must remain open-set because France occurs in test;
-- external entity lookup/data augmentation/geocoding is prohibited.
+## Output requirements
+
+The final output is validated before it is produced.
+
+The pipeline ensures that:
+
+- All required Source-1 entities are represented in the final output.
+- Empty match lists are supported for entities with no resolved matches.
+- Final matches are restricted to generated candidate pairs.
+- The output is written in TSV format.
+- Country values are treated as open-set categorical information.
+- External entity lookup, data augmentation, and geocoding are not part of the pipeline.
+
+## Project status
+
+The pipeline is organized as independent stages so that preprocessing,
+candidate generation, feature engineering, model training, inference, and
+validation can be executed and evaluated separately.
+
+The project is designed to support further improvements in candidate
+generation, feature engineering, machine learning models, and large-scale
+inference.
